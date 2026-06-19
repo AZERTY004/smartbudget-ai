@@ -10,6 +10,24 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Initialisation automatique de la base de données
+def init_sqlite_db():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        montant REAL NOT NULL,
+        categorie TEXT NOT NULL,
+        description TEXT,
+        date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_sqlite_db()
+
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
