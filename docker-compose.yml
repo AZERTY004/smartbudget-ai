@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    image: smartbudget-ai:latest
+    container_name: smartbudget-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+    # Optionnel: si vous avez un fichier .env, docker-compose peut le lire
+    env_file:
+      - .env
+    volumes:
+      # Montage d'un volume pour persister la base de données SQLite en dehors du conteneur
+      - ./data:/app/data
+    restart: unless-stopped
