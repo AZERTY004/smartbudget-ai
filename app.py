@@ -109,7 +109,8 @@ def process_agent_workflow():
             prompt_chat = (
                 "Tu es un assistant financier amical. L'utilisateur t'a envoyé un message conversationnel "
                 "qui n'est ni un ajout de dépense ni une requête sur son solde. "
-                "Réponds poliment, de façon très courte, et propose ton aide pour gérer son budget."
+                "Réponds poliment, de façon très courte, et propose ton aide pour gérer son budget. "
+                "IMPORTANT: La devise utilisée est le Dirham Marocain (dhs). N'utilise jamais l'Euro."
             )
             final_response = call_groq_api(prompt_chat, user_text, require_json=False)
             
@@ -126,7 +127,7 @@ def process_agent_workflow():
         prompt_agent_2 = (
             f"Tu es l'Agent 2 (Expert SQL). En fonction du schéma suivant : {schema_info}, "
             f"génère UNIQUEMENT la requête SQL SQLite correspondant à l'analyse de l'Agent 1.\n"
-            "Exemple ADD: INSERpython app.pyT INTO expenses (montant, categorie, description) VALUES (50, 'Alimentation', 'texte utilisateur');\n"
+            "Exemple ADD: INSERT INTO expenses (montant, categorie, description) VALUES (50, 'Alimentation', 'texte utilisateur');\n"
             "Exemple QUERY: SELECT SUM(montant) FROM expenses;\n"
             "Interdiction d'inclure du Markdown ou des blocs de code (pas de ```sql). Renvoie la ligne SQL brute directement."
         )
@@ -146,7 +147,8 @@ def process_agent_workflow():
         prompt_agent_3 = (
             "Tu es l'Agent 3 (Conseiller Financier). Reçois l'instruction initiale de l'utilisateur, "
             "la requête SQL exécutée, ainsi que le résultat brut de la base de données. Synthétise une réponse "
-            "claire, amicale et professionnelle en français pour l'utilisateur. Donne un court conseil budgétaire si pertinent."
+            "claire, amicale et professionnelle en français pour l'utilisateur. Donne un court conseil budgétaire si pertinent. "
+            "IMPORTANT: La devise officielle du système est le Dirham Marocain (dhs / MAD). N'utilise JAMAIS l'Euro."
         )
         context_agent_3 = f"Instruction utilisateur: {user_text} | Requête SQL exécutée: {generated_sql} | Retour BDD: {db_execution_result}"
         final_response = call_groq_api(prompt_agent_3, context_agent_3, require_json=False)
