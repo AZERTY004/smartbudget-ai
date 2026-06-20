@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartBudget AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -403,6 +404,9 @@
                     
                     <div style="margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px;">
                         <h4 style="color: var(--text-muted); text-align: left; margin-bottom: 15px;">By Category</h4>
+                        <div style="height: 200px; position: relative; margin-bottom: 20px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
                         <div id="dashCategories" class="category-list">
                             <!-- Categories injected here -->
                         </div>
@@ -502,6 +506,8 @@
         }
 
         // --- Admin Workflow ---
+        let categoryChart = null;
+
         async function fetchDashboardData() {
             try {
                 const response = await fetch('/api/dashboard');
@@ -526,6 +532,36 @@
                             `;
                         }
                     }
+                    
+                    // Update Chart
+                    const ctx = document.getElementById('categoryChart').getContext('2d');
+                    const labels = Object.keys(data.categories);
+                    const values = Object.values(data.categories);
+                    
+                    if (categoryChart) {
+                        categoryChart.destroy();
+                    }
+                    
+                    categoryChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels.length ? labels : ['No Data'],
+                            datasets: [{
+                                data: values.length ? values : [1],
+                                backgroundColor: ['#38bdf8', '#818cf8', '#10b981', '#f59e0b', '#ec4899', '#6366f1'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'right', labels: { color: '#f8fafc', font: { family: 'Inter', size: 12 } } }
+                            },
+                            cutout: '75%'
+                        }
+                    });
                     
                     // Update Table
                     const tbody = document.getElementById('dashTableBody');
