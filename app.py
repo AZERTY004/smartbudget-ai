@@ -100,6 +100,26 @@ def process_agent_workflow():
         )
         analysis_raw = call_groq_api(prompt_agent_1, user_text, require_json=True)
         agent1_data = json.loads(analysis_raw)
+        agent1_intent = agent1_data.get("intention")
+
+        # --- GESTION DES CONVERSATIONS CLASSIQUES (Bonjour, etc.) ---
+        if agent1_intent not in ["ADD", "QUERY"]:
+            generated_sql = "N/A (Conversation simple)"
+            db_execution_result = "Aucune base de données interrogée."
+            prompt_chat = (
+                "Tu es un assistant financier amical. L'utilisateur t'a envoyé un message conversationnel "
+                "qui n'est ni un ajout de dépense ni une requête sur son solde. "
+                "Réponds poliment, de façon très courte, et propose ton aide pour gérer son budget."
+            )
+            final_response = call_groq_api(prompt_chat, user_text, require_json=False)
+            
+            return jsonify({
+                "status": "success",
+                "agent1_intent": "CHAT",
+                "agent2_sql": generated_sql,
+                "db_log": db_execution_result,
+                "agent3_answer": final_response
+            })
 
         # --- AGENT 2 : TEXT-TO-SQL ENGINEER ---
         schema_info = "Table 'expenses' avec colonnes: id (INTEGER), montant (REAL), categorie (TEXT), description (TEXT), date (TIMESTAMP)"
