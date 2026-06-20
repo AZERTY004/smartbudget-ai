@@ -490,7 +490,22 @@
                     document.getElementById('logAgent1').innerText = `Intent detected: ${res.agent1_intent}`;
                     document.getElementById('logAgent2').innerText = `${res.agent2_sql}`;
                     document.getElementById('logDB').innerText = `DB Status: ${res.db_log}`;
-                    document.getElementById('logAgent3').innerHTML = res.agent3_answer;
+                    
+                    // Effet Machine à écrire pour l'Agent 3
+                    const agent3El = document.getElementById('logAgent3');
+                    agent3El.innerHTML = "";
+                    let charIndex = 0;
+                    const textToType = res.agent3_answer;
+                    
+                    function typeWriter() {
+                        if (charIndex < textToType.length) {
+                            agent3El.innerHTML += textToType.charAt(charIndex);
+                            charIndex++;
+                            setTimeout(typeWriter, 15); // Vitesse : 15ms par lettre
+                        }
+                    }
+                    typeWriter();
+                    
                     document.getElementById('userInput').value = "";
                 } else {
                     document.getElementById('logAgent1').innerText = `Error: ${res.error}`;
